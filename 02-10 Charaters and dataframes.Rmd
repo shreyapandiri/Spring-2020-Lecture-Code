@@ -5,19 +5,49 @@ output: html_notebook
 
 This is code from lecture on 2/10/2020
 
-
-
 # Strings
-
+```{r}
+name <- "Liz"
+class(name)
+```
 Concatenation (paste)
 
-Substrings
+```{r}
+first_name <- "Liz"
+last_name <- "Fischer"
+paste(first_name, last_name, sep=", ")
+```
 
+Substrings
+```{r}
+paste(substr(first_name, 1, 1), substr(last_name,1,1), sep=". ")
+```
 nchar
+```{r}
+x <- nchar(first_name)
+substr(first_name, x-1,x)
+```
 
 grep
+```{r}
+fruit <- "pear"
+grep("p*e", fruit, ignore.case=TRUE)
+
+```
 
 casting & coersion
+```{r}
+x <- "123"
+
+y <- as.numeric(x) + 2
+class(y)
+
+z <- as.character(y)
+class(z)
+
+t <- "TRUE"
+as.logical(t)
+```
 
 
 # Matrices
@@ -61,9 +91,11 @@ returned <- c("N/A", "N/A", "Yes", "N/A", "Yes", "Yes", "Yes", "No", "Yes")
 
 
 ```{r}
-avengers <- data.frame(alias = aliases, appearances = appearances, year_joined = years, full_member = full, died=died, returned=returned, stringsAsFactors = FALSE)
+avengers <- data.frame("aliases" = aliases, "number of appearances" = appearances, "year joined" = years, "full member" = full, "died" = died, "returned" = returned)
 
-avengers
+
+
+avengers 
 ```
 
 
@@ -90,22 +122,7 @@ avengers
 
 Making logical columns better
 ```{r}
-for (row in 1:nrow(avengers)){
-  full_member <- avengers[row, "full_member"]
-  if (full_member == "No"){
-    avengers[row, "full_member"] <- "FALSE"
-  } else{
-    avengers[row, "full_member"] <- "TRUE"
-  }
-}
 
-#avengers$full_member <- ifelse(avengers$full_member == "Yes", TRUE, FALSE)
-
-avengers$died <- ifelse(avengers$died == "No", FALSE, TRUE)
-
-avengers$returned <- ifelse(avengers$returned == "Yes", TRUE, FALSE)
-
-avengers
 
 ```
 
@@ -120,7 +137,7 @@ avengers
 
 Reordering columns
 ```{r}
-col_order <- c("id", "alias", "appearances", "year_joined","tenure","full_member", "died","still_alive")
+col_order <- c("id", "aliases", "number of appearances", "year joined", "full member", "died")
 avengers <- avengers[, col_order]
 avengers
 ```
@@ -128,13 +145,8 @@ avengers
 
 Querying
 ```{r}
-
-num <- readline("Enter a number: ")
-name <- avengers[num, "alias"]
-if (avengers[num, "still_alive"]){
-  print(paste(name, "is alive", sep=" "))
-} else print(paste(name, "is dead", sep=" "))
-
+avengers$id
+avengers[8, ]
 ```
 
 
