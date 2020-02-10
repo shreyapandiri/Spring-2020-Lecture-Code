@@ -1,0 +1,150 @@
+---
+title: "Characters & Dataframes"
+output: html_notebook
+---
+
+This is code from lecture on 2/10/2020
+
+
+
+# Strings
+
+Concatenation (paste)
+
+Substrings
+
+nchar
+
+grep
+
+casting & coersion
+
+
+# Matrices
+
+Basic
+```{r}
+mat <- matrix(data=1:24, nrow=3, byrow=TRUE)
+mat
+```
+
+
+# Data Frames
+
+Matricies are like vectors-- they can only have one type of data in them. What if we want to handle more complex data?
+
+#### Avengers Tenure
+Let's revisit the Avengers data from PSet 1.
+This is a small subset of a dataset compiled by Five Thirty Eight on deaths in the Marvel universe's Avengers. You can access the full dataset [here](https://data.world/fivethirtyeight/avengers) and the article it was used for [here](https://fivethirtyeight.com/features/avengers-death-comics-age-of-ultron/).
+
+
+| Alias            | Appearances | Year joined | Full member? | Died | Returned | 
+|------------------|-------------|-------------|--------------|------|----------| 
+| She-Hulk         | 55          | 1982        | No           | No   |  N/A     | 
+| Agent Anti-Venom | 746         | 2012        | No           | No   |  N/A     | 
+| The Wasp         | 1165        | 1963        | Yes          | Yes  |  Yes     | 
+| Storm            | 1598        | 2012        | Yes          | No   |  N/A     | 
+| The Hulk         | 2089        | 1963        | Yes          | Yes  |  Yes     | 
+| Thor             | 2402        | 1963        | Yes          | Yes  |  Yes     | 
+| Iron Man         | 3068        | 1963        | Yes          | Yes  |  Yes     | 
+| Wolverine        | 3130        | 2005        | Yes          | Yes  |  No      | 
+| Spider-Man       | 4333        | 1990        | Yes          | Yes  |  Yes     | 
+
+```{r}
+aliases <- c("She-Hulk", "Agent Anti-Venom", "The Wasp", "Storm", "The Hulk", "Thor", "Iron Man", "Wolverine", "Spider-Man")
+appearances <- c(55, 746, 1165, 1598, 2089, 2402, 3068, 3130, 4333)
+years <- c(1982,2012,1963,2012,1963,1963,1963,2005,1995)
+full <- c("No", "No", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes")
+died <- c("No", "No", "Yes", "No", "Yes", "Yes", "Yes", "Yes", "Yes")
+returned <- c("N/A", "N/A", "Yes", "N/A", "Yes", "Yes", "Yes", "No", "Yes")
+```
+
+
+```{r}
+avengers <- data.frame(alias = aliases, appearances = appearances, year_joined = years, full_member = full, died=died, returned=returned, stringsAsFactors = FALSE)
+
+avengers
+```
+
+
+Stats on our new dataframe...
+```{r}
+dim(avengers)
+colnames(avengers)
+rownames(avengers)
+```
+
+Adding ID column
+```{r}
+avengers$id <- 1:nrow(avengers)
+avengers
+```
+
+
+Adding tenure length column
+```{r}
+avengers$tenure <- 2020-avengers$year_joined
+avengers
+```
+
+
+Making logical columns better
+```{r}
+for (row in 1:nrow(avengers)){
+  full_member <- avengers[row, "full_member"]
+  if (full_member == "No"){
+    avengers[row, "full_member"] <- "FALSE"
+  } else{
+    avengers[row, "full_member"] <- "TRUE"
+  }
+}
+
+#avengers$full_member <- ifelse(avengers$full_member == "Yes", TRUE, FALSE)
+
+avengers$died <- ifelse(avengers$died == "No", FALSE, TRUE)
+
+avengers$returned <- ifelse(avengers$returned == "Yes", TRUE, FALSE)
+
+avengers
+
+```
+
+Making still alive column
+
+```{r}
+avengers$still_alive <- !avengers$died | avengers$returned
+avengers
+```
+
+
+
+Reordering columns
+```{r}
+col_order <- c("id", "alias", "appearances", "year_joined","tenure","full_member", "died","still_alive")
+avengers <- avengers[, col_order]
+avengers
+```
+
+
+Querying
+```{r}
+
+num <- readline("Enter a number: ")
+name <- avengers[num, "alias"]
+if (avengers[num, "still_alive"]){
+  print(paste(name, "is alive", sep=" "))
+} else print(paste(name, "is dead", sep=" "))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
