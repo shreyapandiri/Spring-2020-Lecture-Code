@@ -1,0 +1,97 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Data Frames
+
+Matricies are like vectors-- they can only have one type of data in them. What if we want to handle more complex data?
+
+#### Avengers Tenure
+Let's revisit the Avengers data from PSet 1.
+This is a small subset of a dataset compiled by Five Thirty Eight on deaths in the Marvel universe's Avengers. You can access the full dataset [here](https://data.world/fivethirtyeight/avengers) and the article it was used for [here](https://fivethirtyeight.com/features/avengers-death-comics-age-of-ultron/).
+
+
+| Alias            | Appearances | Year joined | Full member? | Died | Returned | 
+|------------------|-------------|-------------|--------------|------|----------| 
+| She-Hulk         | 55          | 1982        | No           | No   |  N/A     | 
+| Agent Anti-Venom | 746         | 2012        | No           | No   |  N/A     | 
+| The Wasp         | 1165        | 1963        | Yes          | Yes  |  Yes     | 
+| Storm            | 1598        | 2012        | Yes          | No   |  N/A     | 
+| The Hulk         | 2089        | 1963        | Yes          | Yes  |  Yes     | 
+| Thor             | 2402        | 1963        | Yes          | Yes  |  Yes     | 
+| Iron Man         | 3068        | 1963        | Yes          | Yes  |  Yes     | 
+| Wolverine        | 3130        | 2005        | Yes          | Yes  |  No      | 
+| Spider-Man       | 4333        | 1990        | Yes          | Yes  |  Yes     | 
+
+```{r}
+aliases <- c("She-Hulk", "Agent Anti-Venom", "The Wasp", "Storm", "The Hulk", "Thor", "Iron Man", "Wolverine", "Spider-Man")
+appearances <- c(55, 746, 1165, 1598, 2089, 2402, 3068, 3130, 4333)
+years <- c(1982,2012,1963,2012,1963,1963,1963,2005,1995)
+full <- c("No", "No", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes")
+died <- c("No", "No", "Yes", "No", "Yes", "Yes", "Yes", "Yes", "Yes")
+returned <- c("N/A", "N/A", "Yes", "N/A", "Yes", "Yes", "Yes", "No", "Yes")
+```
+
+
+```{r}
+avengers <- data.frame("aliases" = aliases, "number of appearances" = appearances, "year joined" = years, "full member" = full, "died" = died, "returned" = returned)
+avengers 
+```
+
+Stats on our new dataframe...
+```{r}
+dim(avengers)
+colnames(avengers)
+rownames(avengers)
+```
+
+Adding ID column
+```{r}
+avengers$id <- 1:nrow(avengers)
+avengers
+```
+
+
+Adding tenure length column
+```{r}
+avengers$tenure <- 2020-avengers$year_joined
+avengers
+```
+
+
+Making logical columns better
+```{r}
+
+
+```
+
+Making still alive column
+
+```{r}
+avengers$still_alive <- !avengers$died | avengers$returned
+avengers
+```
+
+
+
+Reordering columns
+```{r}
+col_order <- c("id", "aliases", "number of appearances", "year joined", "full member", "died")
+avengers <- avengers[, col_order]
+avengers
+```
+
+
+Querying
+```{r}
+avengers$id
+avengers[8, ]
+```
+
+
+
+
+
+
+
