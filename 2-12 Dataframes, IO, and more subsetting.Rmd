@@ -24,6 +24,8 @@ This is a small subset of a dataset compiled by Five Thirty Eight on deaths in t
 | Wolverine        | 3130        | 2005        | Yes          | Yes  |  No      | 
 | Spider-Man       | 4333        | 1990        | Yes          | Yes  |  Yes     | 
 
+
+Make the columns as vectors
 ```{r}
 aliases <- c("She-Hulk", "Agent Anti-Venom", "The Wasp", "Storm", "The Hulk", "Thor", "Iron Man", "Wolverine", "Spider-Man")
 appearances <- c(55, 746, 1165, 1598, 2089, 2402, 3068, 3130, 4333)
@@ -33,9 +35,9 @@ died <- c("No", "No", "Yes", "No", "Yes", "Yes", "Yes", "Yes", "Yes")
 returned <- c("N/A", "N/A", "Yes", "N/A", "Yes", "Yes", "Yes", "No", "Yes")
 ```
 
-
+Create a data frame from the columns
 ```{r}
-avengers <- data.frame("aliases" = aliases, "number of appearances" = appearances, "year joined" = years, "full member" = full, "died" = died, "returned" = returned)
+avengers <- data.frame("aliases" = aliases, "number of appearances" = appearances, "year joined" = years, "full member" = full, "died" = died, "returned" = returned, stringsAsFactors = FALSE)
 avengers 
 ```
 
@@ -46,6 +48,22 @@ colnames(avengers)
 rownames(avengers)
 ```
 
+
+Querying
+```{r}
+avengers$died #select a column
+avengers[8, ] #select a row
+avengers[8, "died"]
+```
+
+Replacing values
+```{r}
+# this is why stringsAsFactors = FALSE is important!
+
+avengers[8, "died"] <- "banana"
+```
+
+
 Adding ID column
 ```{r}
 avengers$id <- 1:nrow(avengers)
@@ -53,64 +71,127 @@ avengers
 ```
 
 
+Reordering columns
+```{r}
+col_order <- c("id", "aliases", "number.of.appearances", "year.joined", "full.member", "died", "returned")
+avengers <- avengers[, col_order]
+avengers
+```
+
+
 Adding tenure length column
 ```{r}
-avengers$tenure <- 2020-avengers$year_joined
+avengers$tenure <- 2020-avengers$year.joined
 avengers
 ```
 
 
 Making logical columns better
 ```{r}
-
-
+for (row in 1:nrow(avengers)){
+  full_member <- avengers[row, "full.member"]
+  if (full_member == "No"){
+    avengers[row, "full.member"] <- "FALSE"
+  } else {
+    avengers[row, "full.member"] <- "TRUE"
+  }
+}
+# avengers$full_member <- ifelse(avengers$full_member == "Yes", TRUE, FALSE)
+avengers$died <- ifelse(avengers$died == "No", FALSE, TRUE)
+avengers$returned <- ifelse(avengers$returned == "Yes", TRUE, FALSE)
+avengers
 ```
 
 Making still alive column
-
 ```{r}
-avengers$still_alive <- !avengers$died | avengers$returned
+avengers$still.alive <- !avengers$died | avengers$returned
 avengers
 ```
 
 
-
-Reordering columns
+Reordering columns & omitting some
 ```{r}
-col_order <- c("id", "aliases", "number of appearances", "year joined", "full member", "died")
+col_order <- c("id", "aliases", "number.of.appearances", "tenure", "full.member", "still.alive")
 avengers <- avengers[, col_order]
 avengers
-```
-
-
-Querying
-```{r}
-avengers$id
-avengers[8, ]
 ```
 
 
 
 # I/O - Reading and Writing Files
 
+## Reading
+Finding our place on the computer
+```{r}
+getwd()
+#setwd("/Desktop/Spring-2020-Lecture-Code")
+#getwd()
+```
+
+Seeing what's there
+```{r}
+dir()
+```
+
+
+```{r}
+playlist <- read.csv(file="spotify.csv", as.is=TRUE) #as.is=TRUE is another way to stop R from creating factors, like stringsAsFactors = FALSE.
+playlist
+```
+
+## Writing
+```{r}
+write.csv(x=avengers, file="avengers.csv")
+```
+
+
+## Advanced subsetting
+
+We can search a column for a value....
+```{r}
+playlist$artists == "ABBA"
+```
+
+
+Or multiple values...
+```{r}
+index <- (playlist$artists == "ABBA" | playlist$artists == "Cher")
+index
+
+#playlist[index,]
+```
+
+
+```{r}
+playlist$artists %in% c("ABBA", "Cher", "Shakira")
+
+#playlist[]
+```
+
+What happened to Shakira?
+```{r}
+playlist[grep("Shakira", playlist$artists),]
+
+#playlist[grep("Shakira|ABBA|Cher", playlist$artists),] # this is taking advantage of Regular Expressions, which you are free to read about as needed but we won't cover extensively
+
+
+```
+
+Self-titled albums
+```{r}
+playlist[playlist$album %in% playlist$artists, ]
+```
+
+Reorder
+```{r}
+index <- order(playlist$popularity, decreasing=TRUE)
+index
+
+#playlist[index,]
+```
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+We'll talk about combining tables later, but read the book section that talks about it (2.9)
 
