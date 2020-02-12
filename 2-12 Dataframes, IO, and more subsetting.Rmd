@@ -1,6 +1,7 @@
 ---
-title: "R Notebook"
+title: "Lecture Code 2/12 - Dataframes, I/O, and Advanced Subsetting"
 output: html_notebook
+author: "Liz Fischer"
 ---
 
 # Data Frames
