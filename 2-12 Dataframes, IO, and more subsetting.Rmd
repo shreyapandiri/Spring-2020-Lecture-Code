@@ -1,6 +1,7 @@
 ---
-title: "R Notebook"
+title: "Lecture Code 2/12 - Dataframes, I/O, and Advanced Subsetting"
 output: html_notebook
+author: "Liz Fischer"
 ---
 
 # Data Frames
@@ -60,7 +61,8 @@ Replacing values
 ```{r}
 # this is why stringsAsFactors = FALSE is important!
 
-avengers[8, "died"] <- "banana"
+avengers[8, "died"] <- "Yes"
+avengers
 ```
 
 
@@ -76,6 +78,7 @@ Reordering columns
 col_order <- c("id", "aliases", "number.of.appearances", "year.joined", "full.member", "died", "returned")
 avengers <- avengers[, col_order]
 avengers
+
 ```
 
 
@@ -89,8 +92,8 @@ avengers
 Making logical columns better
 ```{r}
 for (row in 1:nrow(avengers)){
-  full_member <- avengers[row, "full.member"]
-  if (full_member == "No"){
+  c <- avengers[row, "full.member"]
+  if (c == "No"){
     avengers[row, "full.member"] <- "FALSE"
   } else {
     avengers[row, "full.member"] <- "TRUE"
@@ -141,7 +144,7 @@ playlist
 
 ## Writing
 ```{r}
-write.csv(x=avengers, file="avengers.csv")
+write.csv(x=avengers, file="avengers.csv", row.names = FALSE)
 ```
 
 
@@ -150,6 +153,8 @@ write.csv(x=avengers, file="avengers.csv")
 We can search a column for a value....
 ```{r}
 playlist$artists == "ABBA"
+
+playlist[playlist$artists == "ABBA",]
 ```
 
 
@@ -158,21 +163,21 @@ Or multiple values...
 index <- (playlist$artists == "ABBA" | playlist$artists == "Cher")
 index
 
-#playlist[index,]
+playlist[index,]
 ```
 
 
 ```{r}
 playlist$artists %in% c("ABBA", "Cher", "Shakira")
 
-#playlist[]
+playlist[playlist$artists %in% c("ABBA", "Cher", "Shakira"),]
 ```
 
 What happened to Shakira?
 ```{r}
 playlist[grep("Shakira", playlist$artists),]
 
-#playlist[grep("Shakira|ABBA|Cher", playlist$artists),] # this is taking advantage of Regular Expressions, which you are free to read about as needed but we won't cover extensively
+playlist[grep("Shakira|ABBA|Cher", playlist$artists),] # this is taking advantage of Regular Expressions, which you are free to read about as needed but we won't cover extensively
 
 
 ```
@@ -187,7 +192,8 @@ Reorder
 index <- order(playlist$popularity, decreasing=TRUE)
 index
 
-#playlist[index,]
+playlist[index,]
+playlist[1,]
 ```
 
 
