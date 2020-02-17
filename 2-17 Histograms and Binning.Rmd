@@ -10,36 +10,41 @@ books
 ```
 
 Let's look at language. How what's the distribution like?
-```{r paged.print=TRUE}
+```{r}
 tab <- table(books$language_code)
 tab
 ```
 
 We can reorder these to make it a bit easier to see...
 ```{r}
-tab[order(tab, decreasing = TRUE)]
+tab <- tab[order(tab, decreasing = TRUE)]
+tab
 ```
 
 Or get just the counts...
 ```{r}
 counts <- as.numeric(tab)
-class(counts)
+counts
+#class(counts)
 ```
 
-Or show just the lables, ordered from fewest to most occurances 
+Or show just the labels, ordered from fewest to most occurances 
 ```{r}
-names(tab)[order(tab,decreasing = FALSE)]
+languages <- names(tab)[order(tab,decreasing = FALSE)]
+class(languages)
 ```
 
 Let's combine all the English variations into one.
 ```{r}
-books$language_code <- ifelse(books$language_code == "en-US" | books$language_code == "en-GB" | books$language_code == "en-CA", "eng", books$language_code)
+#books$language_code <- ifelse(books$language_code == "en-GB" | books$language_code == "en-CA" | books$language_code == "en-US", "eng", books$language_code)
 
-#OR books$language_code <- ifelse(grepl("en-", books$language_code), "eng", books$language_code)
-
+books$language_code <- ifelse(grepl("en-", books$language_code), "eng", books$language_code)
 books
 ```
 
+```{r}
+table(books$X..num_pages)
+```
 
 
 
@@ -52,8 +57,12 @@ Whoa, that's a wide span. Hard to tell much detail like that.... Let's try to el
 
 ```{r}
 ?hist
-
+hist(books$X..num_pages[books$X..num_pages < 2000], breaks = 50, xlab = "Number of pages", main = "Book length (under 2000 pages)", col = "gray")
 ```
 
-
-
+```{r}
+quantile(books$X..num_pages)
+```
+```{r}
+hist(books$X..num_pages[books$X..num_pages > 2000])
+```
