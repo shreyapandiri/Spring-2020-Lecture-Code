@@ -1,0 +1,59 @@
+---
+title: "Code from class 2/17"
+output: html_notebook
+---
+
+Let's load some data
+```{r}
+books <-  read.csv("goodreads.csv", as.is=TRUE)
+books
+```
+
+Let's look at language. How what's the distribution like?
+```{r paged.print=TRUE}
+tab <- table(books$language_code)
+tab
+```
+
+We can reorder these to make it a bit easier to see...
+```{r}
+tab[order(tab, decreasing = TRUE)]
+```
+
+Or get just the counts...
+```{r}
+counts <- as.numeric(tab)
+class(counts)
+```
+
+Or show just the lables, ordered from fewest to most occurances 
+```{r}
+names(tab)[order(tab,decreasing = FALSE)]
+```
+
+Let's combine all the English variations into one.
+```{r}
+books$language_code <- ifelse(books$language_code == "en-US" | books$language_code == "en-GB" | books$language_code == "en-CA", "eng", books$language_code)
+
+#OR books$language_code <- ifelse(grepl("en-", books$language_code), "eng", books$language_code)
+
+books
+```
+
+
+
+
+Let's look at length. What is the distribution like?
+```{r}
+hist(books$X..num_pages)
+```
+
+Whoa, that's a wide span. Hard to tell much detail like that.... Let's try to eliminate some outliers
+
+```{r}
+?hist
+
+```
+
+
+
