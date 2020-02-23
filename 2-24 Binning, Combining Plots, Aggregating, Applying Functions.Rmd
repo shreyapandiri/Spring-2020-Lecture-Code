@@ -1,0 +1,151 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+df <- read.csv("ks-projects-201801.csv", as.is=TRUE)
+t <-table(df$category)
+t[order(t)]
+```
+
+Let's get just Video Games for a moment
+
+```{r}
+vg <- df[df$category == "Video Games", ]
+table(vg$state)[order(table(vg$state))]
+```
+
+Adding a year column to make the data easier to work with
+```{r}
+for (i in 1:length(vg$launched)) {
+  x <- strsplit(vg$launched[i], "-")
+  vg$year[i] <- as.numeric(x[[1]][1])
+}
+```
+
+
+#Histograms
+
+See number of video games each year
+```{r}
+vg$year <- as.numeric(vg$year)
+table(vg$year)
+hist(vg$year)
+```
+
+Calcualting & visualizing average pledge size
+```{r}
+avgPledge <- vg$usd_pledged_real/vg$backers
+avgPledge[is.nan(avgPledge) | is.infinite(avgPledge)] <- 0
+
+hist(avgPledge[avgPledge < 200], breaks=50, col="gray")
+```
+
+
+
+# QUANTILES
+
+```{r}
+quantile(vg$usd_goal_real)
+```
+
+Notice the positive skew
+
+
+```{r}
+coff <- quantile(avgPledge, prob=.25)
+lowPledgeFlag <- (avgPledge < coff)
+table(lowPledgeFlag, vg$state)
+```
+
+
+# Binning
+```{r}
+breakPoints <- quantile(avgPledge, prob=seq(0,1,length.out=11), names=FALSE)
+breakPoints
+```
+
+Putting each row into one of the bins by quantile
+```{r}
+bin <- cut(avgPledge, breakPoints, labels=FALSE, include.lowest = TRUE)
+table(bin, vg$state)
+```
+
+Equal-area histogram using quantiles:
+```{r}
+breakPoints[1:10]
+hist(avgPledge[avgPledge < 80], breaks=breakPoints[1:10])
+```
+
+
+
+# Combining Plots
+
+```{r}
+t <- table(vg$year)
+years <-as.numeric(names(t))
+
+par(mfrow=c(3,3))
+par(mar=c(0,0,2,0))
+
+for (i in 1:length(years)){
+  y <- vg[vg$year == years[i], ]
+  hist(y$avg[y$avg < 100], breaks=50, ylim = c(0, 90), col = "dodgerblue", main=paste("Average pledges in", years[i]), xlab="", ylab="", axes = FALSE)
+  box()
+}
+
+```
+
+
+
+#Aggregation
+
+```{r}
+s <- df[df$state=="successful",]
+
+categories <- unique(s$category)
+
+moneySpent <- 1:length(categories)
+names(moneySpent) <- categories
+
+for (c in categories){
+  index <- which(df$category == c)
+  moneySpent[c] <- sum(df[index,"usd_pledged_real"])
+}
+
+
+moneySpent[order(moneySpent, decreasing = TRUE)]
+
+```
+
+# Applying functions
+
+```{r}
+apply(df[,15:14], 2, sum)
+
+```
+
+```{r}
+debates <- read.csv("debate_transcripts.csv", as.is=TRUE)
+```
+
+```{r}
+speakers <- unique(debates$speaker)
+speakers
+```
+
+```{r}
+x <- tapply(debates$speech, INDEX=debates$speaker, FUN=paste, collapse=" ")
+
+library(stringr)
+str_count(x["George S."], "Sanders")
+
+apply(x, 1, FUN=str_count, pattern="Sanders|Bernie")
+
+```
+
+
+
+
+
