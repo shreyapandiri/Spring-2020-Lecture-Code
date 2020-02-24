@@ -1,0 +1,112 @@
+---
+title: "2/26: Aggregation, Applying Functions, Scatter Plots"
+output: html_notebook
+---
+
+# Continuous vs Categorical Data
+
+
+
+# Aggregation
+Aggregating *continuous* data over *categorical* variables
+
+```{r}
+df <- read.csv("ks-projects-201801.csv", as.is=TRUE)
+```
+
+```{r}
+t <-table(df$main_category)
+t[order(t)]
+```
+
+```{r}
+art <- df[df$main_category == "Art",]
+art
+```
+
+
+#Aggregation
+
+```{r}
+success <- art[art$state=="successful",]
+failed <- art[art$state!="successful",]
+```
+
+```{r}
+categories <- unique(success$category)
+categories
+```
+
+```{r}
+moneySpent <- c(1:length(categories)) # fill temporarily with numbers 
+moneySpent
+```
+
+```{r}
+names(moneySpent) <- categories
+moneySpent
+```
+
+```{r}
+index <- which(success$category == "Painting")
+index
+```
+
+```{r}
+for (c in categories){ # for each category
+  index <- which(success$category == c) # find the things with that category
+  moneySpent[c] <- sum(success[index,"usd_pledged_real"])
+  
+  #moneySpent[c] <- sum(success[success$category == c, "usd_pledged_real"])
+}
+
+moneySpent[order(moneySpent, decreasing = TRUE)]
+```
+
+# Applying functions
+
+```{r}
+apply(df[,15:14], 2, sum)
+
+```
+
+
+```{r}
+debates <- read.csv("debate_transcripts.csv", as.is=TRUE)
+```
+
+```{r}
+speakers <- unique(debates$speaker)
+speakers
+```
+
+```{r}
+x <- tapply(debates$speech, INDEX=debates$speaker, FUN=paste, collapse=" ")
+
+library(stringr)
+str_count(x["George S."], "Sanders")
+
+apply(x, 1, FUN=str_count, pattern="Sanders|Bernie")
+
+```
+
+
+# Scatter Plots
+```{r}
+mid <- success[
+  success$usd_goal_real > quantile(success$usd_goal_real, prob=.2) 
+  & success$usd_goal_real < quantile(success$usd_goal_real, prob=.9) 
+  & success$usd_pledged_real > quantile(success$usd_pledged_real, prob=.2) 
+  & success$usd_pledged_real < quantile(success$usd_pledged_real, prob=.9)
+  ,]
+
+plot(mid$usd_goal_real, mid$usd_pledged_real)
+
+abline(0,1)
+abline(0,2)
+```
+
+```{r}
+
+```
+
