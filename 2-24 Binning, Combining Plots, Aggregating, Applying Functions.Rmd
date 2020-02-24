@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "2/24: Binning, Combining Plots, Aggregation, Applying Functions"
 output: html_notebook
 ---
 
@@ -39,7 +39,7 @@ Calcualting & visualizing average pledge size
 avgPledge <- vg$usd_pledged_real/vg$backers
 avgPledge[is.nan(avgPledge) | is.infinite(avgPledge)] <- 0
 
-hist(avgPledge[avgPledge < 200], breaks=50, col="gray")
+hist(avgPledge[avgPledge <200], breaks=50, col="gray")
 ```
 
 
@@ -55,6 +55,7 @@ Notice the positive skew
 
 ```{r}
 coff <- quantile(avgPledge, prob=.25)
+coff
 lowPledgeFlag <- (avgPledge < coff)
 table(lowPledgeFlag, vg$state)
 ```
@@ -78,7 +79,9 @@ breakPoints[1:10]
 hist(avgPledge[avgPledge < 80], breaks=breakPoints[1:10])
 ```
 
-
+```{r}
+vg$avg <- vg$usd_pledged_real/vg$backers
+```
 
 # Combining Plots
 
@@ -87,10 +90,12 @@ t <- table(vg$year)
 years <-as.numeric(names(t))
 
 par(mfrow=c(3,3))
-par(mar=c(0,0,2,0))
+#par(mar=c(0,0,2,0))
 
 for (i in 1:length(years)){
   y <- vg[vg$year == years[i], ]
+  #print(y)
+  #print(y$avg[y$avg < 100])
   hist(y$avg[y$avg < 100], breaks=50, ylim = c(0, 90), col = "dodgerblue", main=paste("Average pledges in", years[i]), xlab="", ylab="", axes = FALSE)
   box()
 }
