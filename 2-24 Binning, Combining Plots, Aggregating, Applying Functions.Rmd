@@ -154,3 +154,60 @@ apply(x, 1, FUN=str_count, pattern="Sanders|Bernie")
 
 
 
+
+```{r}
+
+
+ages <- c(18,19,20,20,20,20,21,21,21,21,21,22,23,23,25,25)
+colors <- c("black", "orange,", "blue", "white", "green", "black", "black", "black", "white")
+
+#colors <- ifelse(grepl("b", colors), "pink", "purple")
+#colors
+
+quantile(ages, probs = seq(.15,.37, length.out = 12))
+
+
+seq(.15,.37, length.out = 12)
+
+
+#t <- table(colors)
+#hist(t[t > 1])
+
+
+
+
+#hist(t, breaks=5)
+
+#hist(ages, breaks = 205)
+
+
+```
+
+
+
+
+
+```{r}
+df <- data.frame(ages[1:9], colors, stringsAsFactors = FALSE)
+
+# Selecting a column
+#df$colors
+
+# Selecting a row
+
+cutoff <- quantile(df$ages.1.9., probs = .75)
+cutoff
+df[df$ages.1.9.>=cutoff,]
+
+
+# Selecting a single cell
+#df$colors[1] 
+#df[1, "colors"]
+
+
+
+```
+
+
+
+
