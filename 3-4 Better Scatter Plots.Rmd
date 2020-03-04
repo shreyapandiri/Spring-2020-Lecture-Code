@@ -1,0 +1,130 @@
+---
+title: "3/4: Better Scatter Plots, Correlation, and Linear Models"
+output: html_notebook
+---
+
+#Prepping data
+Load the data
+```{r}
+df <- read.csv("ks-projects-201801.csv", as.is=TRUE)
+
+```
+
+Adding useful columns
+```{r}
+df$average_pledge <- df$usd_pledged_real/df$backers
+df$average_pledge <- ifelse(is.nan(df$average_pledge), 0, df$average_pledge)
+
+df$percent_of_goal <- round(df$usd_pledged_real/df$usd_goal_real, digits=3)
+```
+
+
+#Scatter plots
+```{r}
+art <- df[df$main_category=="Art" & df$state=="successful",]
+
+mid <- art[
+  art$usd_goal_real > quantile(art$usd_goal_real, prob=.1) &
+  art$usd_goal_real < quantile(art$usd_goal_real, prob=.9) &
+  art$usd_pledged_real > quantile(art$usd_pledged_real, prob=.1) &
+  art$usd_pledged_real < quantile(art$usd_pledged_real, prob=.9)
+,]
+
+plot(mid$usd_goal_real, mid$usd_pledged_real)
+```
+
+```{r}
+pchVals <- rep(1, nrow(mid))
+pchVals[mid$category=="Public Art"] <- 3
+
+plot(mid$usd_goal_real, mid$usd_pledged_real, pch=pchVals)
+```
+
+```{r}
+colorVals <-  rep("black", nrow(mid))
+colorVals[mid$category=="Public Art"] <- "red"
+
+plot(mid$usd_goal_real, mid$usd_pledged_real, pch=pchVals, col=colorVals)
+```
+
+
+```{r}
+lowPledge <- quantile(mid$average_pledge, prob=.1)
+
+colorVals <- rep("black", nrow(mid))
+colorVals[mid$average_pledge <= lowPledge] <- "green"
+
+plot(mid$usd_goal_real, mid$usd_pledged_real, col=colorVals)
+```
+
+
+Let's say we want color-code the subcategories of Art...
+```{r}
+subcats <- unique(art$category)
+```
+
+First we make these numbers...
+```{r}
+categoryIndex <- match(art$category, subcats)
+categoryIndex
+```
+Then we assign colors to each number...
+```{r}
+colors <-  c("green", "red", "blue", "orange", "purple", "black", "brown", "aquamarine1", "coral", "grey", "firebrick", "beige", "cornsilk")
+#Or get random colors with: 
+#colors <-  sample(colors(), length(subcats))
+#colors
+
+colors[categoryIndex]
+
+```
+And use them in a plot
+```{r}
+plot(mid$usd_goal_real, mid$usd_pledged_real, col=colors[categoryIndex], pch=19)
+```
+
+#Adding text
+Let's say we want to do something with the subcategories of Art...
+```{r}
+unique(art$category)
+```
+
+Get average amount pledged in each subcategory
+```{r}
+catPledgedAvg <- tapply(art$usd_pledged_real, art$category, mean)
+catPledgedAvg
+```
+
+And average goal in each subcategory
+```{r}
+catGoalAvg <- tapply(art$usd_goal_real, art$category, mean)
+catGoalAvg
+```
+
+Then plot those
+```{r}
+plot(catGoalAvg, catPledgedAvg)
+```
+
+Can add labels
+```{r}
+plot(catGoalAvg, catPledgedAvg)
+text(catGoalAvg, catPledgedAvg-300, labels=names(catGoalAvg))
+```
+
+# Correlation
+The closer it is to +/- 1, the stronger the relationship
+```{r}
+df[, c("usd_goal_real", "usd_pledged_real")]
+#cor(df[, c("usd_goal_real", "usd_pledged_real")])
+#cor(mid[, c("usd_goal_real", "usd_pledged_real")])
+```
+
+#Best fit line
+```{r}
+lm(mid$usd_pledged_real ~ mid$usd_goal_real)
+```
+```{r}
+plot(mid$usd_goal_real, mid$usd_pledged_real)
+abline(593.970, 1.053)
+```
