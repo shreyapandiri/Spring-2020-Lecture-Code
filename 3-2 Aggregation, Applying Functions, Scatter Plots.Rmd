@@ -4,7 +4,11 @@ output: html_notebook
 ---
 
 # Continuous vs Categorical Data
+In the kickstarter data, what is categorical? 
+Category, main_category
 
+What's continuous?
+Title, dollar amounts
 
 
 # Aggregation
@@ -22,6 +26,9 @@ t[order(t)]
 ```{r}
 art <- df[df$main_category == "Art",]
 art
+
+
+sum(art$usd_pledged_real)
 ```
 
 
@@ -66,6 +73,8 @@ moneySpent[order(moneySpent, decreasing = TRUE)]
 # Applying functions
 
 ```{r}
+#df[,15:14]
+sum(art$usd.pledged)
 apply(df[,15:14], 2, sum)
 
 ```
@@ -82,9 +91,10 @@ speakers
 
 ```{r}
 x <- tapply(debates$speech, INDEX=debates$speaker, FUN=paste, collapse=" ")
+#x
 
 library(stringr)
-str_count(x["George S."], "Sanders")
+#str_count(x["Amy Klobuchar"], "Sanders")
 
 apply(x, 1, FUN=str_count, pattern="Sanders|Bernie")
 
@@ -93,20 +103,21 @@ apply(x, 1, FUN=str_count, pattern="Sanders|Bernie")
 
 # Scatter Plots
 ```{r}
+success <- df[df$state == "successful" & df$category=="Art",]
+success$avg <- success$usd_pledged_real/success$backers
 mid <- success[
-  success$usd_goal_real > quantile(success$usd_goal_real, prob=.2) 
-  & success$usd_goal_real < quantile(success$usd_goal_real, prob=.9) 
+  success$avg > quantile(success$avg, prob=.2) 
+  & success$avg < quantile(success$avg, prob=.9) 
   & success$usd_pledged_real > quantile(success$usd_pledged_real, prob=.2) 
   & success$usd_pledged_real < quantile(success$usd_pledged_real, prob=.9)
   ,]
 
-plot(mid$usd_goal_real, mid$usd_pledged_real)
+plot(mid$avg, mid$usd_pledged_real)
 
 abline(0,1)
-abline(0,2)
 ```
 
 ```{r}
-
+quantile(success$usd_goal_real, prob=.2) 
 ```
 
